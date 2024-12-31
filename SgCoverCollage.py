@@ -80,7 +80,7 @@ def generatePicture(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='SGPicGenerator',
+        prog='SgCoverCollage',
         description='Generates nice Pictures of your books',
         epilog='')    
 
