@@ -7,6 +7,9 @@ ISBNSEARCH_BASE_URL="https://isbnsearch.org/"
 ISBNSEARCH_SLUG="isbn/{isbn}"
 
 class isbnSearchPicLoader:
+    '''
+    Tries to download pictures for ISBN's based on isbnsearch.org
+    '''
     
     per_call_break = 0.5 # in seconds
 

@@ -9,6 +9,9 @@ ISBN_SLUG="book/{isbn}"
 
 
 class isbnDbDownloader:
+    '''
+    Tries to download pictures for books based on their ISBN from isbndb.com
+    '''
     # download_path: str = ""
 
     # def setDownloadLocation(self, path:str):
@@ -16,9 +19,9 @@ class isbnDbDownloader:
 
     def __init__(self):
         pass
-        # self.download_path=download_path
 
-    def get_image_url(self, isbn: str):
+    def get_cover_image_url(self, isbn: str):
+        '''Queries isbndb.com and retrieves a url to the cover image'''
         url = BASE_URL + ISBN_SLUG.format(isbn=isbn)
         resp = requests.get(url, headers=AUTH_HEADER)
         data = resp.json()
@@ -31,6 +34,11 @@ class isbnDbDownloader:
     
 
     def downloadImage(self, url: str, dest_path: str):
+        '''
+        Downloads a image from a url and saves it to a file
+        url: to download
+        dest_path: where to save the image
+        '''
         # dest_folder = self.download_path
         # filename = filename
 

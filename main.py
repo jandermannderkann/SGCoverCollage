@@ -3,6 +3,7 @@ import argparse
 from isbnDB import isbnDbDownloader
 import os
 from bookCoverCombinator import combineImages
+import isbn as isbnlib
 
 class PicturePool():
     path: str 
@@ -50,19 +51,22 @@ def generatePicture(args):
 
     # get images
     for isbn in parser.isbns():
+        if not isbnlib.isIsbn(isbn):
+            print("Error, not a ISBN: {}".format(isbn))
+            continue
         book = LibraryBook(isbn)
         if not pool.has_image(isbn):
-            url = downloader.get_image_url(isbn)
+            
+            url = downloader.get_cover_image_url(isbn)
             if url != None and url != "":
-                downloader.downloadImage(url, 'tmp/'+isbn)
+                downloader.downloadImage(url, pool.image_location(isbn))
             else: 
                 print("Error no Url found")
         else:
-            print("pic {} already exists".format(isbn))
+            print("Found Cover for ISBN {}".format(isbn))
 
     combineImages(pool.image_files(), 'out')
     
-
 
 def main():
     parser = argparse.ArgumentParser(
