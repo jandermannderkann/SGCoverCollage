@@ -37,6 +37,13 @@ class PicturePool():
         for filename in os.listdir(self.path):
             yield os.path.join(self.path, filename)
 
+    def image_files(self, isbns: list[str]):
+        for isbn in isbns:
+            if self.has_image(isbn):
+                yield self.image_location(isbn)
+            else: 
+                continue
+
 class LibraryBook():
     isbn: str
     image_path: str
@@ -44,13 +51,8 @@ class LibraryBook():
     def __init__(self, isbn:str):
         self.isbn = isbn
 
-def generatePicture(args):
-    parser = sgCsvParser(args.csvFile)
-    downloader = isbnDbDownloader()
-    pool = PicturePool(args.downloadFolder)
-
-    # get images
-    for isbn in parser.isbns():
+def downloadAllPicturesToPool(isbns: list[str], pool:PicturePool, downloader: isbnDbDownloader):
+    for isbn in isbns:
         if not isbnlib.isIsbn(isbn):
             print("Error, not a ISBN: {}".format(isbn))
             continue
@@ -64,8 +66,16 @@ def generatePicture(args):
                 print("Error no Url found")
         else:
             print("Found Cover for ISBN {}".format(isbn))
+    
 
-    combineImages(pool.image_files(), 'out')
+def generatePicture(args):
+    parser = sgCsvParser(args.csvFile)
+    downloader = isbnDbDownloader()
+    pool = PicturePool(args.downloadFolder)
+    # get images
+    downloadAllPicturesToPool(parser.isbns(), pool, downloader)
+    images = pool.image_files(parser.isbns())
+    combineImages(images, 'out')
     
 
 def main():
