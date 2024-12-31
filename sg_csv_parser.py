@@ -1,3 +1,5 @@
+import csv
+import isbn as isbnlib
 
 class sgCsvParser:
     '''
@@ -26,8 +28,11 @@ class sgCsvParser:
         expected_header = "Title,Authors,Contributors,ISBN/UID,Format,Read Status,Date Added,Last Date Read,Dates Read,Read Count,Moods,Pace,Character- or Plot-Driven?,Strong Character Development?,Loveable Characters?,Diverse Characters?,Flawed Characters?,Star Rating,Review,Content Warnings,Content Warning Description,Tags,Owned?"
         header=header.strip()
         return header==expected_header
-        
+    
     def isbns(self):
+        return [x for x in self.get_isbn_fields() if x != '' and isbnlib.isIsbn(x)]
+
+    def get_isbn_fields(self):
         '''
         Get all isbns
         '''
@@ -35,14 +40,16 @@ class sgCsvParser:
 
         with open(path) as file:
             _header = file.readline()
+            reader = csv.reader(file)
+            data = [x for x in reader]
+            records = data[1:]
             if not self.validate_header(_header):
                 exit("Invalid csv format")
 
-            for line in file:
-                data = line.split(',')
-                title = data[0]
-                autor = data[1]
-                isbn = data[3]
+            for record in data:
+                title = record[0]
+                autor = record[1]
+                isbn = record[3]
                 yield isbn
                 
                 
