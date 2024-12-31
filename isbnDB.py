@@ -28,7 +28,7 @@ class isbnDbDownloader:
         try:
             image_url = data['book']['image']
         except KeyError:
-            print("Error, no image for isbn:{} found".format(isbn))
+            print("Error, no image for isbn: {} found".format(isbn))
             return ""
         return image_url
     
