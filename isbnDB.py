@@ -14,6 +14,10 @@ class isbnDbDownloader:
 
     def __init__(self, auth_key: str):
         self.key = auth_key
+        if auth_key.endswith(".key"):
+            with open(auth_key) as f:
+                self.key = f.read().strip()
+        
 
     def header(self):
         return {'Authorization': self.key}

@@ -75,7 +75,7 @@ class sgCsvParser:
         return [b.isbn for b in self.library if isbnlib.isIsbn(b.isbn) or isbnlib.isASIN(b.isbn)]
     
 
-    def isbnstats(self)->dict[str:(int,int)]:
+    def isbnstats(self)->dict[str:int]:
         '''
         Returns 6 values:
         isbn: number of books where isbn was found
