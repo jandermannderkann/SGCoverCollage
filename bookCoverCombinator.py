@@ -1,12 +1,22 @@
 from PIL import Image
+from PIL.Image import Image as ImageObj
 import math
 
 # 210 x 297 mm
-def combineImages(files: list[str], path:str):
-    images = [Image.open(x) for x in files ]
+def filter_placeholders(images: list[ImageObj]):
     images = [x for x in images if not x.size[0]<100] # Amazon images
     images = [x for x in images if not x.size[1]==248] # Not available images
+    return images
 
+def saveCollage(files:list[str], dst_path):
+    collage = getCollage(files)
+    print("Saving image to {}".format(dst_path))
+    collage.save(dst_path)
+
+def getCollage(files: list[str]):
+    images = [Image.open(x) for x in files ]
+    images = filter_placeholders(images)
+    
     noImages = len(images)
     widths, heights = zip(*(i.size for i in images))
     print("widths, heights:")
@@ -16,7 +26,7 @@ def combineImages(files: list[str], path:str):
     for h in heights:
         if h != heights[0]:
             print("WARN: pictures dont have equal height")
-
+    
 
     # # twidth=1920
     # # theight=1080
@@ -90,9 +100,8 @@ def combineImages(files: list[str], path:str):
             new_im.paste(img,(math.floor(start_row_x+col*image_target_width),y))
         i+=noCols
         y+=max_height_final_images
+    return new_im
 
-    print("Saving image")
-    new_im.save('test.jpg')
 
 def resize_prop_to_fit_x(imgs: list[Image], twidth):
     resized = []
