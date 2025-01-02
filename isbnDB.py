@@ -2,8 +2,6 @@ import json
 import requests
 import os
 
-KEY="58019_e99bca673d8a686231824e3b5d7c4c4c"
-AUTH_HEADER = {'Authorization': KEY}
 BASE_URL="https://api2.isbndb.com/"
 ISBN_SLUG="book/{isbn}"
 
@@ -12,18 +10,18 @@ class isbnDbDownloader:
     '''
     Tries to download pictures for books based on their ISBN from isbndb.com
     '''
-    # download_path: str = ""
+    key: str = "DEFAULT"
 
-    # def setDownloadLocation(self, path:str):
-    #     self.download_path = path
+    def __init__(self, auth_key: str):
+        self.key = auth_key
 
-    def __init__(self):
-        pass
+    def header(self):
+        return {'Authorization': self.key}
 
     def get_cover_image_url(self, isbn: str):
         '''Queries isbndb.com and retrieves a url to the cover image'''
         url = BASE_URL + ISBN_SLUG.format(isbn=isbn)
-        resp = requests.get(url, headers=AUTH_HEADER)
+        resp = requests.get(url, headers=self.header())
         data = resp.json()
         try:
             image_url = data['book']['image']
@@ -39,13 +37,6 @@ class isbnDbDownloader:
         url: to download
         dest_path: where to save the image
         '''
-        # dest_folder = self.download_path
-        # filename = filename
-
-        # if not os.path.exists(dest_folder):
-        #     exit("Error, destination folder:{} doesnt exist".format(dest_folder))
-        
-        # file_path = os.path.join(dest_folder, filename)
         print("Downloading image from url: {} to {}".format(url, dest_path))
         r = requests.get(url, stream=True)
         if r.ok:
