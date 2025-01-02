@@ -1,5 +1,16 @@
 import csv
 import isbn as isbnlib
+from dataclasses import dataclass
+
+@dataclass
+class Book():
+    isbn: str
+    author: str
+    title: str
+    read_status: str
+    read_count: str
+    star_rating: str
+    owned: str
 
 class sgCsvParser:
     '''
@@ -7,13 +18,10 @@ class sgCsvParser:
     Mainly extracts ISBN (or ASNI) of books
     '''
 
-    # Headers: 
-    # Title,Authors,Contributors,ISBN/UID,Format,Read Status,Date Added,Last Date Read,Dates Read,Read Count,
-    # 10: Moods,Pace,Character- or Plot-Driven?,Strong Character Development?,Loveable Characters?,
-    # 15: Diverse Characters?,Flawed Characters?,Star Rating,Review,Content Warnings,
-    # 20: Content Warning Description,Tags,Owned?      
     
-    filepath = ""
+    
+    filepath: str = ""
+    books: list[Book] = []
 
     def __init__(self, filepath:str):
         '''
@@ -29,12 +37,45 @@ class sgCsvParser:
         header=header.strip()
         return header==expected_header
     
-    def isbns(self):
-        return [x for x in self.get_isbn_fields() if x != '' and isbnlib.isIsbn(x)]
+    def books(self):
+        if len(self.books) == 0:
+            self.parse()
+        return self.books
+    
+    # Headers: 
+    # Title,Authors,Contributors,ISBN/UID,Format,Read Status,Date Added,Last Date Read,Dates Read,Read Count,
+    # 10: Moods,Pace,Character- or Plot-Driven?,Strong Character Development?,Loveable Characters?,
+    # 15: Diverse Characters?,Flawed Characters?,Star Rating,Review,Content Warnings,
+    # 20: Content Warning Description,Tags,Owned?      
+    def book_from_csvRecord(self,record: list[str]):
+        '''Creates book object from csv record'''
+        title = record[0]
+        autor = record[1]
+        isbn = record[3]
+        read_status=record[5]
+        read_count=record[9]
+        star_rating = record[18]
+        owned =record[22]
+        book = Book(
+            isbn=isbn,
+            author=autor,
+            title=title,
+            read_count=read_count,
+            read_status=read_status,
+            owned=owned,
+            star_rating=star_rating,
+            )
+        
 
-    def get_isbn_fields(self):
+    def isbns(self):
+        if len(self.books) == 0:
+            self.parse()
+
+        return [b.isbn for b in self.books if b.isbn != '' and isbnlib.isIsbn(b.isbn)]
+
+    def parse(self):
         '''
-        Get all isbns
+        Parse the file, generating Book objects from them
         '''
         path = self.filepath
 
@@ -47,9 +88,8 @@ class sgCsvParser:
                 exit("Invalid csv format")
 
             for record in data:
-                title = record[0]
-                autor = record[1]
-                isbn = record[3]
-                yield isbn
+                book = self.book_from_csvRecord(record)
+                
+                self.books.append(book)
                 
                 

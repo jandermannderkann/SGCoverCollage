@@ -48,19 +48,13 @@ class PicturePool():
             else: 
                 continue
 
-class LibraryBook():
-    isbn: str
-    image_path: str
-    
-    def __init__(self, isbn:str):
-        self.isbn = isbn
 
 def downloadAllPicturesToPool(isbns: list[str], pool:PicturePool, downloader: isbnDbDownloader):
     for isbn in isbns:
         if not isbnlib.isIsbn(isbn):
             print("Error, not a ISBN: {}".format(isbn))
             continue
-        book = LibraryBook(isbn)
+        
         if not pool.has_image(isbn):
             
             url = downloader.get_cover_image_url(isbn)
